@@ -1,8 +1,71 @@
 {% extends 'Templates_base.html' %}
+{% load stock_tags %}
+
+{% block titre %}Page d'accueil{% endblock %}
 
 {% block content %}
-{% block titre %}Page d'accueil{% endblock %}
-  <h1>Bienvenue sur la page d'accueil de la gestion de stock!</h1>
+<div class="card dashboard-card">
+    <h1>Gestion de stock</h1>
+    <p>Bienvenue, {{ user.username }} ! Accédez rapidement aux produits, aux commandes et aux activités récentes.</p>
+</div>
+
+<div class="dashboard-grid">
+    <div class="metric-card">
+        <div>
+            <small>Produits</small>
+            <span class="stat-value">{{ total_products }}</span>
+        </div>
+        <div class="status-pill">Articles disponibles</div>
+    </div>
+    <div class="metric-card">
+        <div>
+            <small>Valeur du stock</small>
+            <span class="stat-value">{{ stock_value|floatformat:2 }} FCFA</span>
+        </div>
+        <div class="status-pill">Valeur estimée</div>
+    </div>
+    <div class="metric-card">
+        <div>
+            <small>Ventes totales</small>
+            <span class="stat-value">{{ total_sales|floatformat:2 }} FCFA</span>
+        </div>
+        <div class="status-pill">Chiffre estimé</div>
+    </div>
+    <div class="metric-card">
+        <div>
+            <small>Commandes en attente</small>
+            <span class="stat-value">{{ pending_orders }}</span>
+        </div>
+        <div class="status-pill">À traiter</div>
+    </div>
+</div>
+
+<div class="section-row">
+    <div class="actions-panel">
+        <h2>Actions rapides</h2>
+        <a class="action-button action-green" href="{% url 'articles' %}">Ajouter un produit</a>
+        <a class="action-button action-orange" href="{% url 'articles' %}">Exporter les produits</a>
+        <a class="action-button action-pink" href="{% url 'contact' %}">Créer une facture</a>
+    </div>
+    <div class="activities-panel">
+        <h2>Activités récentes des ventes</h2>
+        {% for sale in recent_sales %}
+        <div class="activity-item">
+            <div>{{ sale.client }} - {{ sale.ref }} - {{ sale.date }}</div>
+            <span class="status-pill">{{ sale.montant }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="section-row">
+    <div class="actions-panel">
+        <h2>Produits retournés</h2>
+        <p>Suivez les retours produits, gérez les remises et mettez à jour les stocks en conséquence.</p>
+    </div>
+    <div class="actions-panel">
+        <h2>Produits défectueux</h2>
+        <p>Listez ici les articles à retirer du stock et planifiez les actions de réparation ou remplacement.</p>
+    </div>
+</div>
 {% endblock %}
-</head>
-</html>

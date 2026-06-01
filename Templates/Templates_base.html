@@ -1,21 +1,286 @@
+{% load stock_tags %}
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block titre %}{% endblock %}</title>
+    <title>{% block titre %}Gestion de stock{% endblock %}</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f7fb;
+            color: #1c2733;
+        }
+        .navbar {
+            background: #0f4c75;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            flex-wrap: wrap;
+        }
+        .brand {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        .nav-links,
+        .auth-links {
+            display: flex;
+            gap: 12px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .nav-links a,
+        .auth-links a,
+        .logout-button {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            transition: background .2s ease;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font: inherit;
+        }
+        .logout-button {
+            display: inline-block;
+        }
+        .nav-links a:hover,
+        .auth-links a:hover,
+        .logout-button:hover,
+        .active-menu {
+            background: #3282b8;
+        }
+        .logout-form {
+            display: inline;
+        }
+        .page-content {
+            max-width: 1140px;
+            margin: 24px auto;
+            padding: 0 20px;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 18px;
+            box-shadow: 0 16px 40px rgba(17, 24, 39, 0.08);
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+        .article-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        .article-table th,
+        .article-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #e5eaf1;
+            text-align: left;
+        }
+        .article-table th {
+            background: #eef4fb;
+            font-weight: 700;
+        }
+        .button {
+            display: inline-block;
+            background: #0f4c75;
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 22px;
+            border-radius: 10px;
+            margin-top: 12px;
+        }
+        .highlight-box {
+            background: #f1f6ff;
+            border-left: 4px solid #3282b8;
+            padding: 14px 18px;
+            margin-top: 20px;
+            border-radius: 12px;
+        }
+        .highlight-box h3 {
+            margin: 0 0 10px;
+        }
+        .highlight-box ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .highlight-box li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.08);
+        }
+        .stats-row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .stat-box {
+            flex: 1;
+            min-width: 180px;
+            background: #eef4fb;
+            padding: 18px;
+            border-radius: 14px;
+        }
+        .stat-value {
+            display: block;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        .stat-label {
+            color: #4b5563;
+        }
+        .dashboard-grid {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            margin-top: 20px;
+        }
+        .metric-card {
+            background: linear-gradient(135deg, #1f7a8c, #2b8b87);
+            color: #fff;
+            padding: 22px;
+            border-radius: 18px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .metric-card small {
+            color: rgba(255,255,255,0.8);
+        }
+        .actions-panel,
+        .activities-panel {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 16px 40px rgba(17, 24, 39, 0.08);
+        }
+        .actions-panel h2,
+        .activities-panel h2 {
+            margin-top: 0;
+            margin-bottom: 18px;
+            font-size: 1.3rem;
+        }
+        .action-button {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 14px 18px;
+            border-radius: 14px;
+            text-decoration: none;
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 12px;
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(15,76,117,0.2);
+        }
+        .action-green { background: #16a34a; }
+        .action-orange { background: #ea580c; }
+        .action-pink { background: #db2777; }
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #f1f4f8;
+        }
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        .activity-item span {
+            display: inline-block;
+        }
+        .status-pill {
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: #eef4fb;
+            color: #0f4c75;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        .section-row {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: 1.5fr 1fr;
+            margin-top: 24px;
+        }
+        @media (max-width: 900px) {
+            .section-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        .auth-card input,
+        .auth-card label,
+        .auth-card button {
+            width: 100%;
+        }
+        .auth-card input {
+            margin-bottom: 14px;
+            padding: 12px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+        }
+        .auth-card button {
+            margin-top: 12px;
+            border: none;
+            background: #0f4c75;
+            color: white;
+            padding: 14px;
+            cursor: pointer;
+            border-radius: 14px;
+        }
+        .auth-card button:hover {
+            opacity: 0.95;
+        }
+        .auth-card a {
+            color: #0f4c75;
+            text-decoration: none;
+        }
+        .auth-card a:hover {
+            text-decoration: underline;
+        }
+        .alert {
+            background-color: #fff4e5;
+            color: #663c00;
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #f1c40f;
+        }
+    </style>
 </head>
 <body>
-    <ul style="list-style-type: none;">
-    <li style="display: inline-block; padding: 10px 20px;">
-      <a href="/">Accueil</a>
-    </li>
-    <li style="display: inline-block; padding: 10px 20px;">
-      <a href="/contact/">Contact</a>
-    </li>
-    <li style="display: inline-block; padding: 10px 20px;">
-      <a href="/articles/">Articles</a>
-    </li>
-  </ul>
-  {% block content %}{% endblock %}
-  </body>
+    <nav class="navbar">
+        <div class="brand">Gestion de stock</div>
+                <ul class="auth-links">
+            {% if user.is_authenticated %}
+                <li><a class="{% active_link '/dashboard/' %}" href="{% url 'dashboard' %}">Tableau de bord</a></li>
+                <li>
+                    <form method="post" action="{% url 'logout' %}" class="logout-form">
+                        {% csrf_token %}
+                        <button type="submit" class="logout-button">Déconnexion</button>
+                    </form>
+                </li>
+            {% else %}
+                <li><a class="{% active_link '/accounts/login/' %}" href="{% url 'login' %}">Connexion</a></li>
+                <li><a class="{% active_link '/accounts/signup/' %}" href="{% url 'signup' %}">Créer un compte</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    <main class="page-content">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+</body>
 </html>

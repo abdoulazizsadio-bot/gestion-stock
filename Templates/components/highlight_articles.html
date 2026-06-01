@@ -1,0 +1,13 @@
+<div class="highlight-box">
+  <h3>À la une</h3>
+  <ul>
+    {% for article in articles %}
+      <li>
+        <strong>{{ article.titre|default:"Sans titre" }}</strong>
+        <span>{{ article.date_publication }}</span>
+      </li>
+    {% empty %}
+      <li>Aucun article disponible.</li>
+    {% endfor %}
+  </ul>
+</div>

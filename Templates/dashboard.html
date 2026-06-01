@@ -1,0 +1,22 @@
+{% extends 'Templates_base.html' %}
+{% load stock_tags %}
+
+{% block titre %}Tableau de bord{% endblock %}
+
+{% block content %}
+<div class="card dashboard-card">
+  <h1>Mon tableau de bord</h1>
+  <p>Bienvenue, {{ user.username }} ! Voici un aperçu de vos articles disponibles.</p>
+  <div class="stats-row">
+    <div class="stat-box">
+      <span class="stat-value">{{ articles|length }}</span>
+      <span class="stat-label">Articles</span>
+    </div>
+    <div class="stat-box">
+      <span class="stat-value">{{ articles|length|multiply:2 }}</span>
+      <span class="stat-label">Stock estimé</span>
+    </div>
+  </div>
+  <a class="button" href="{% url 'articles' %}">Voir tous les articles</a>
+</div>
+{% endblock %}

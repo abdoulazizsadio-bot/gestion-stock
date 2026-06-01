@@ -1,9 +1,41 @@
 {% extends 'Templates_base.html' %}
-{% block content %}
+{% load stock_tags %}
+
 {% block titre %}Page articles{% endblock %}
-    <h1>Les Articles</h1>
-    <ul>
-        <li>Article 1</li>
-        <li>Article 2</li>
-    </ul>
+
+{% block content %}
+<div class="card">
+    <h1>Les articles disponibles</h1>
+    <p>Voici une vue détaillée de vos produits, avec prix, date de publication et auteur.</p>
+    <table class="article-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Titre</th>
+                <th>Description</th>
+                <th>Prix</th>
+                <th>Quantité</th>
+                <th>Auteur</th>
+                <th>Date de publication</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for article in articles %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ article.titre }}</td>
+                    <td>{{ article.description }}</td>
+                    <td>{{ article.prix|currency }}</td>
+                    <td>{{ article.quantite }}</td>
+                    <td>{{ article.Auteur }}</td>
+                    <td>{{ article.date_publication }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="7">Aucun article disponible.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

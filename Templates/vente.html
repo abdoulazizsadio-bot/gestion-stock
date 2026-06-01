@@ -1,0 +1,19 @@
+class Vente(models.Model):
+    article = models.ForeignKey(
+        Article,
+        on_delete=models.CASCADE,
+        related_name="ventes"
+    )
+
+    prix_vente = models.DecimalField(
+        max_digits=12,
+        decimal_places=2
+    )
+
+    quantite = models.IntegerField()
+
+    date = models.DateField()
+
+    @property
+    def montant(self):
+        return self.prix_vente * self.quantite

@@ -1,0 +1,11 @@
+{% extends 'Templates_base.html' %}
+
+{% block titre %}Déconnexion{% endblock %}
+
+{% block content %}
+<div class="card auth-card" style="max-width: 520px; margin: 40px auto; text-align: center;">
+  <h1>Déconnexion réussie</h1>
+  <p>Vous avez bien été déconnecté. Revenez lorsque vous souhaitez réaccéder au tableau de bord.</p>
+  <a class="button" href="{% url 'login' %}">Se reconnecter</a>
+</div>
+{% endblock %}
